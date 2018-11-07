@@ -1,4 +1,4 @@
-package com.authorization.conf;
+package com.authorization;
 
 public class AuthorizationServer {
 
