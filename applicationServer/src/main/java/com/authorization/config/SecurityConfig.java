@@ -1,4 +1,4 @@
-package com.authorization;
+package com.authorization.config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,11 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.CompositeFilter;
 
+import com.authorization.filter.FacebookOAuthClientAuthenticationProcessingFilter;
+import com.authorization.filter.GoogleOAuthClientAuthenticationProcessingFilter;
+import com.authorization.resource.ClientResources;
+import com.authorization.service.SocialService;
+
 import lombok.AllArgsConstructor;
 
 /**
@@ -38,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private final OAuth2ClientContext oAuth2ClientContext;
-//    private final SocialService socialService;
+    private final SocialService socialService;
     
 	/**
 	 * http Configuration
@@ -48,7 +53,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		// TODO Auto-generated method stub
 		
+		
+		
 		// @formatter:off
+		http.csrf().disable();
+		
 		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**").permitAll().anyRequest()
 		.authenticated().and().exceptionHandling()
 		.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and()
@@ -96,30 +105,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// TODO Auto-generated method stub
 		CompositeFilter filter = new CompositeFilter();
 		List<Filter> filters = new ArrayList<>();
-		filters.add(ssoFilter(google(), "/auth/google")); // 이전에 등록했던 리다이렉트 URL
-		filters.add(ssoFilter(facebook(), "/auth/facebook"));
+		filters.add(ssoFilter(google(), new GoogleOAuthClientAuthenticationProcessingFilter(socialService))); // 이전에 등록했던 리다이렉트 URL
+		filters.add(ssoFilter(facebook(), new FacebookOAuthClientAuthenticationProcessingFilter(socialService)));
 		filter.setFilters(filters);
 		return filter;
 	}
 
-	private Filter ssoFilter(ClientResources client, String path) {
+	private Filter ssoFilter(ClientResources client, OAuth2ClientAuthenticationProcessingFilter filters) {
 		// TODO Auto-generated method stub
 		
 		// OAuth2ClientAuthenticationProcessingFilter 필터는 인증 서버에서 OAuth2 엑세스 토큰을 획득하고 인증 객체를 
 		// SecurityContext에 로드하는데 사용할 수 있는 OAuth2 클라이언트 필터
-		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(path);
+		//OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(path);
 		OAuth2RestTemplate restTemplate = new OAuth2RestTemplate(client.getClient(), oAuth2ClientContext); //OAuth2 전용 RestTemplate : Access Token 값을 가져오고 해당 토큰에 사용자 정보를 가져온다.
-		filter.setRestTemplate(restTemplate);
+		filters.setRestTemplate(restTemplate);
 		UserInfoTokenServices tokenServices = new UserInfoTokenServices(client.getResource().getUserInfoUri(), client.getClient().getClientId());
 		tokenServices.setRestTemplate(restTemplate);
-		filter.setTokenServices(tokenServices);
-		return filter;
+		filters.setTokenServices(tokenServices);
+		return filters;
 	}
-	
-	
-	
-	
-	
 	
 	
 	

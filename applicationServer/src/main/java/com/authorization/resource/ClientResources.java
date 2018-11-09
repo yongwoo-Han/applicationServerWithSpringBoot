@@ -1,10 +1,8 @@
-package com.authorization;
+package com.authorization.resource;
 
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
-
-import lombok.Data;
 
 /**
  * application.yml 설정된 Facebook, Google 정보를 가져온다.

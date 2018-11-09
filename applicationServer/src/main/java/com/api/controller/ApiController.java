@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ApiController {
-
+	
 	@GetMapping(value="/")
 	public Principal home(Principal principal) {
         return principal;
     }
+	
+	
 }
