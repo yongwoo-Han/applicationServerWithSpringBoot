@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -43,7 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private final OAuth2ClientContext oAuth2ClientContext;
-    private final SocialService socialService;
+    
+	private final SocialService socialService;
+    private final Environment env;
     
 	/**
 	 * http Configuration
@@ -53,24 +56,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		// TODO Auto-generated method stub
 		
-		
-		
+		if(isMode()) {
+			setLocalMode(http);
+		}else {
+			setRealMode(http);
+		}
 		// @formatter:off
-		http.csrf().disable();
-		
-		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**").permitAll().anyRequest()
-		.authenticated().and().exceptionHandling()
-		.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and()
-		.addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
-		// @formatter:on
-
-		//log out
-		http.logout()
-			.invalidateHttpSession(true)
-			.clearAuthentication(true)
-			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-			.logoutSuccessUrl("/")
-			.permitAll();
+//		http.csrf().disable();
+//		
+//		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/h2_console/**").permitAll().anyRequest()
+//		.authenticated().and().exceptionHandling()
+//		.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and()
+//		.addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+//		// @formatter:on
+//
+//		//log out
+//		http.logout()
+//			.invalidateHttpSession(true)
+//			.clearAuthentication(true)
+//			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+//			.logoutSuccessUrl("/")
+//			.permitAll();
+//		
+//		http.headers().frameOptions().disable();
 	}
 	
 	@Bean
@@ -124,6 +132,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		filters.setTokenServices(tokenServices);
 		return filters;
 	}
+	
+	/**
+	 * 로컬모드 등 설정
+	 * @return
+	 */
+	private boolean isMode() {
+		String profile = env.getActiveProfiles().length > 0 ? env.getActiveProfiles()[0] : "local";
+		return profile.equals("local");
+	}
+	
+	private void setLocalMode(HttpSecurity http) throws Exception {
+        http.antMatcher("/**")
+                .authorizeRequests()
+                .antMatchers("/", "/me", "/h2-console/**", "/login/**", "/js/**", "/css/**", "/image/**", "/fonts/**", "/favicon.ico").permitAll()
+                .and().headers().frameOptions().sameOrigin()
+                .and().csrf().disable();
+        
+        http.addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+    }
+
+    private void setRealMode(HttpSecurity http) throws Exception {
+//        http.antMatcher("/**")
+//                .authorizeRequests()
+//
+//                .and().csrf().csrfTokenRepository(csrfTokenRepository())
+//                .and().addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
+//                ;
+    }
 	
 	
 	

@@ -9,23 +9,6 @@ spring:
     show-sql: true
     properties:
       hibernate.format_sql: true
-      
-#spring:
-#  datasource:
-#    url: jdbc:h2:mem:example-app;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-#    platform: h2
-#    username: sa
-#    password:
-#    driverClassName: org.h2.Driver
-#  jpa:
-#    database-platform: org.hibernate.dialect.H2Dialect
-#    hibernate:
-#      ddl-auto: update
-#    properties:
-#      hibernate:
-#        show_sql: true
-#        use_sql_comments: true
-#        format_sql: true
 
 logging:
   level:
@@ -33,7 +16,6 @@ logging:
     org:
       hibernate:
         type: trace
-
 
 # Server SSL 적용
 server:
@@ -47,7 +29,7 @@ server:
 facebook:
   client:
     clientId: 214940482748221
-    clientSecret: 9c59ee6c9d9d3438f7bfcbdf5b946655
+    clientSecret: 41881ee1424a2361e508e24311217db2
     accessTokenUri: https://graph.facebook.com/oauth/access_token
     userAuthorizationUri: https://www.facebook.com/dialog/oauth
     tokenName: oauth_token

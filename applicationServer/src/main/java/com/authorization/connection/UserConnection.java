@@ -1,5 +1,7 @@
 package com.authorization.connection;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -21,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "user_connection")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class UserConnection {
+public class UserConnection implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -72,7 +74,7 @@ public class UserConnection {
                 .providerId(userDetails.getSub())
                 .email(userDetails.getEmail())
                 .displayName(userDetails.getName())
-//                .imageUrl(userDetails.getPicture())
+                .imageUrl(userDetails.getPicture())
                 .provider(ProviderType.GOOGLE)
                 .profileUrl(userDetails.getProfile())
                 .build();

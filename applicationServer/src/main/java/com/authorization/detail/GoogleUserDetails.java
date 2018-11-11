@@ -5,37 +5,30 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import lombok.Getter;
 
 /**
- * FaceBook UserDetail DTO
- * @author han
+ * Google UserDetail DTO
+ * @author han.yong.woo
  *
  */
 @Getter
 public class GoogleUserDetails {
 
-	public Picture picture;
-    private String id;
+	private String sub;
     private String name;
+    private String given_name;
+    private String family_name;
+    private String profile;
+    private String picture;
     private String email;
+    private boolean email_verified;
+    private String gender;
+    private String locale;
+
     private long expiration;
     private String access_token;
-    private String sub;
-    private String profile;
-    
+
+
     public void setAccessToken(OAuth2AccessToken accessToken) {
         this.access_token = accessToken.getValue();
         this.expiration = accessToken.getExpiration().getTime();
-    }
-
-    public String getImageUrl() {
-        return picture.data.url;
-    }
-
-    @Getter
-    public static class Picture {
-        private Data data;
-
-        public static class Data {
-            private String url;
-        }
     }
 }
