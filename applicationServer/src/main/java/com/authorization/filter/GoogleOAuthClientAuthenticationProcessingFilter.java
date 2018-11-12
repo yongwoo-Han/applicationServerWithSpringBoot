@@ -44,8 +44,10 @@ public class GoogleOAuthClientAuthenticationProcessingFilter extends OAuth2Clien
 		final OAuth2AccessToken accessToken = restTemplate.getAccessToken(); // 토큰 정보 가져온다.
 		final OAuth2Authentication auth = (OAuth2Authentication) authResult; // 인증된 Client와 User 정보를 가져온다.
 		final Object details = auth.getUserAuthentication().getDetails(); // 소셜에서 JSON으로 떨어진 데이터(상세정보)를 저장
+		
 		final GoogleUserDetails googleDetails = mapper.convertValue(details, GoogleUserDetails.class);
 		googleDetails.setAccessToken(accessToken);
+		
 		final UserConnection userConnection = UserConnection.valueOf(googleDetails); // UserConnection을 userDetails 기반으로 생성
 		final UsernamePasswordAuthenticationToken userPasswordToken = socialService.doAuthentication(userConnection); //SocialService를 이용하여 인증절차 진행
 		super.successfulAuthentication(request, response, chain, userPasswordToken);

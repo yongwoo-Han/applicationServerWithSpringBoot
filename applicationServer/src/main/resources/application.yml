@@ -36,7 +36,7 @@ facebook:
     authenticationScheme: query
     clientAuthenticationScheme: form
   resource:
-    userInfoUri: https://graph.facebook.com/me
+    userInfoUri: https://graph.facebook.com/me?fields=email,name,picture
 
 # Google oAuth 2.0 configure
 google :
